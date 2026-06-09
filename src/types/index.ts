@@ -27,6 +27,7 @@ export interface Assessment {
 
 export interface Question {
   question_id: number;
+  question_number?: number;
   question_text: string;
   id: string;
   assessment_id: string;

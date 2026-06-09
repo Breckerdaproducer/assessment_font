@@ -122,13 +122,13 @@ export function LecturerDashboard() {
                     <FontAwesomeIcon icon={faClock} />
                     {(a as any).duration_minutes || a.duration ? `${(a as any).duration_minutes || a.duration} mins` : 'No limit'}
                   </span>
-                  <span className={`px-2 py-1 rounded-full ${(a.isPublished || (a as any).is_published) ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                    {(a.isPublished || (a as any).is_published) ? 'Published' : 'Draft'}
+                  <span className={`px-2 py-1 rounded-full ${(a.is_published || (a as any).is_published) ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                    {(a.is_published || (a as any).is_published) ? 'Published' : 'Draft'}
                   </span>
                 </div>
               </div>
               <div className="flex gap-2">
-                {(a.isPublished || (a as any).is_published) ? (
+                {(a.is_published || (a as any).is_published) ? (
                    <Button variant="secondary" className="flex-1 text-xs" onClick={() => router.push(`/assessments/${a.id}/participants`)}>
                     View Results
                   </Button>

@@ -189,10 +189,13 @@ export default function NewAssessmentPage() {
                           />
                           <input
                             className="flex-1 bg-transparent border-none text-sm focus:ring-0 p-0"
-                            value={opt}
+                            value={opt.text}
                             onChange={(e) => {
                               const newOpts = [...(q.options || [])];
-                              newOpts[oIndex] = e.target.value;
+                              newOpts[oIndex] = {
+    ...newOpts[oIndex],
+    text: e.target.value,
+  };
                               updateQuestion(qIndex, 'options', newOpts);
                             }}
                           />

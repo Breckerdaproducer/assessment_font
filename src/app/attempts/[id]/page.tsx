@@ -77,7 +77,7 @@ export default function AttemptResultPage({
           </div>
           <h2 className="text-xl font-bold mb-2">Oops! Something went wrong</h2>
           <p className="text-slate-600 mb-6">{error}</p>
-          <Button onClick={() => router.push('/dashboard')} block>
+          <Button onClick={() => router.push('/dashboard')} >
             Back to Dashboard
           </Button>
         </Card>
@@ -230,7 +230,7 @@ export default function AttemptResultPage({
           <div className="mt-12 text-center">
             <Button
               variant="primary"
-              size="lg"
+             
               onClick={() => router.push('/dashboard')}
             >
               Finish Review

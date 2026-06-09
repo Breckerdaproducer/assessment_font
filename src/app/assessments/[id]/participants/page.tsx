@@ -105,7 +105,7 @@ export default function AssessmentParticipantsPage({
           </div>
           <h2 className="text-xl font-bold mb-2">Error Loading Data</h2>
           <p className="text-slate-600 mb-6">{error}</p>
-          <Button onClick={() => router.push('/dashboard')} block>
+          <Button onClick={() => router.push('/dashboard')} >
             Back to Dashboard
           </Button>
         </Card>
