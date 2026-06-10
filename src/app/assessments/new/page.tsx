@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Question } from '@/types';
+import { normalizeOption, normalizeQuestion } from '@/lib/questionUtils';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { Card } from '@/components/Card/Card';
 import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
+import { FormatGuideModal } from '@/components/FormatGuideModal/FormatGuideModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudUploadAlt, faArrowLeft, faSave, faCheck } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,6 +17,7 @@ export default function NewAssessmentPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showFormatGuide, setShowFormatGuide] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -22,6 +25,10 @@ export default function NewAssessmentPage() {
   });
   const [questions, setQuestions] = useState<Partial<Question>[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    setShowFormatGuide(true);
+  }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,9 +55,9 @@ export default function NewAssessmentPage() {
         setError(res.message);
         return;
       }
-      
+      console.log(res.data);
 
-      setQuestions(res.data);
+      setQuestions((res.data || []).map(normalizeQuestion));
       setStep(2);
     } catch (err: any) {
       setError(err.message);
@@ -73,7 +80,7 @@ export default function NewAssessmentPage() {
         },
         body: JSON.stringify({
           ...formData,
-          questions,
+          questions: questions.map(normalizeQuestion),
         }),
       });
 
@@ -100,6 +107,10 @@ export default function NewAssessmentPage() {
 
   return (
     <ProtectedRoute allowedRoles={['LECTURER']}>
+      <FormatGuideModal 
+        isOpen={showFormatGuide} 
+        onClose={() => setShowFormatGuide(false)} 
+      />
       <Navbar />
       <main className="max-w-4xl mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold mb-8 text-slate-900">Create New Assessment</h1>
@@ -168,46 +179,51 @@ export default function NewAssessmentPage() {
                 </div>
               )}
 
-              {questions.map((q, qIndex) => (
-                <Card key={qIndex} className="relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-slate-200"></div>
-                  <div className="flex flex-col gap-4">
-                    <Input
-                      label={`Question ${qIndex + 1}`}
-                      value={q.text}
-                      onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)}
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                      {q.options?.map((opt, oIndex) => (
-                        <div key={oIndex} className="flex items-center gap-3 p-2 rounded-md border border-slate-100 bg-slate-50/50">
-                          <input
-                            type="radio"
-                            name={`correct-${qIndex}`}
-                            className="w-4 h-4 text-blue-600"
-                            checked={q.correctOption === oIndex}
-                            onChange={() => updateQuestion(qIndex, 'correctOption', oIndex)}
-                          />
-                          <input
-                            className="flex-1 bg-transparent border-none text-sm focus:ring-0 p-0"
-                            value={opt.text}
-                            onChange={(e) => {
-                              const newOpts = [...(q.options || [])];
-                              newOpts[oIndex] = {
-    ...newOpts[oIndex],
-    text: e.target.value,
-  };
-                              updateQuestion(qIndex, 'options', newOpts);
-                            }}
-                          />
-                          {q.correctOption === oIndex && (
-                            <FontAwesomeIcon icon={faCheck} className="text-green-500 text-xs" />
-                          )}
-                        </div>
-                      ))}
+              {questions.map((q, qIndex) => {
+                const currentQuestion = normalizeQuestion(q);
+                const options = currentQuestion.options.map((option, index) => normalizeOption(option, index));
+
+                return (
+                  <Card key={qIndex} className="relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-slate-200"></div>
+                    <div className="flex flex-col gap-4">
+                      <Input
+                        label={`Question ${qIndex + 1}`}
+                        value={currentQuestion.text}
+                        onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)}
+                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        {options.map((opt, oIndex) => (
+                          <div key={opt.id ?? oIndex} className="flex items-center gap-3 p-2 rounded-md border border-slate-100 bg-slate-50/50">
+                            <input
+                              type="radio"
+                              name={`correct-${qIndex}`}
+                              className="w-4 h-4 text-blue-600"
+                              checked={currentQuestion.correctOption === oIndex}
+                              onChange={() => updateQuestion(qIndex, 'correctOption', oIndex)}
+                            />
+                            <input
+                              className="flex-1 bg-transparent border-none text-sm focus:ring-0 p-0"
+                              value={String(opt.text ?? opt.label ?? '')}
+                              onChange={(e) => {
+                                const newOpts = options.map((item, index) =>
+                                  index === oIndex
+                                    ? { ...item, text: e.target.value, label: e.target.value }
+                                    : item
+                                );
+                                updateQuestion(qIndex, 'options', newOpts);
+                              }}
+                            />
+                            {currentQuestion.correctOption === oIndex && (
+                              <FontAwesomeIcon icon={faCheck} className="text-green-500 text-xs" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
               
               <div className="flex justify-between items-center mt-6 sticky bottom-6 bg-white p-4 rounded-lg border border-slate-200 shadow-xl">
                 <Button variant="secondary" onClick={() => setStep(1)} icon={faArrowLeft}>

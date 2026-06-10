@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Assessment, Question } from '@/types';
+import { normalizeOption, normalizeQuestion } from '@/lib/questionUtils';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { Card } from '@/components/Card/Card';
@@ -56,7 +57,7 @@ export default function TakeAssessmentPage({
         }
 
         setAssessment(assessData.data);
-        setQuestions(questData.data);
+        setQuestions((questData.data || []).map(normalizeQuestion));
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -67,7 +68,8 @@ export default function TakeAssessmentPage({
     fetchData();
   }, [id]);
 
-  const currentQuestion = questions[currentIndex];
+  const currentQuestion = questions[currentIndex] ? normalizeQuestion(questions[currentIndex]) : null;
+  const options = currentQuestion?.options.map((option, index) => normalizeOption(option, index)) || [];
 
   const handleSubmit = async () => {
     if (!confirm('Are you sure you want to submit your answers?')) return;
@@ -156,7 +158,7 @@ export default function TakeAssessmentPage({
           </h3>
 
           <div className="flex flex-col gap-3">
-            {currentQuestion.options.map((opt, oIdx) => (
+            {options.map((opt, oIdx) => (
               <label
                 key={opt.id ?? oIdx}
                 className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-all ${
@@ -181,7 +183,7 @@ export default function TakeAssessmentPage({
                 />
 
                 <span className="font-medium text-slate-700">
-                  {opt.label || ["A", "B", "C", "D", "E", "F"][oIdx]}. {opt.text}
+                  {String(opt.label ?? opt.text ?? ["A", "B", "C", "D", "E", "F"][oIdx] ?? '').replace(/\s+/g, ' ').trim()}
                 </span>
               </label>
             ))}

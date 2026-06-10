@@ -32,9 +32,16 @@ export interface Question {
   id: string;
   assessment_id: string;
   text: string;
-  options: {
-    question_text: ReactNode; id: string; label: string; text: string 
-}[];
+  options: Array<
+    | string
+    | {
+        id?: string;
+        label?: string;
+        text?: string;
+        question_text?: ReactNode;
+        is_correct?: boolean;
+      }
+  >;
   correctOption?: number; // Only for lecturer views
 }
 
