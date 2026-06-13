@@ -191,18 +191,19 @@ export default function TakeAssessmentPage({
         </Card>
 
         {/* NAVIGATION */}
-        <div className="mt-8 flex justify-between items-center">
+        <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <Button
             onClick={() =>
               setCurrentIndex((prev) => Math.max(prev - 1, 0))
             }
             disabled={currentIndex === 0}
             icon={faArrowLeft}
+            className="w-full sm:w-auto order-2 sm:order-1"
           >
             Previous
           </Button>
 
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-slate-500 order-1 sm:order-2">
             {currentIndex + 1} / {questions.length}
           </div>
 
@@ -214,6 +215,7 @@ export default function TakeAssessmentPage({
                 )
               }
               icon={faArrowRight}
+              className="w-full sm:w-auto order-3"
             >
               Next
             </Button>
@@ -222,7 +224,7 @@ export default function TakeAssessmentPage({
               onClick={handleSubmit}
               isLoading={submitting}
               icon={faCheckCircle}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 w-full sm:w-auto order-3"
             >
               Submit
             </Button>

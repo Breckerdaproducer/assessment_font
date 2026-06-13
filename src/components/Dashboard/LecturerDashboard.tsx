@@ -84,12 +84,12 @@ export function LecturerDashboard() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex justify-between items-center bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-lg border border-slate-200 shadow-sm gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">My Assessments</h1>
-          <p className="text-slate-500">Manage and publish your created assessments.</p>
+          <p className="text-slate-500 text-sm">Manage and publish your created assessments.</p>
         </div>
-        <Button icon={faPlus} onClick={() => router.push('/assessments/new')}>
+        <Button icon={faPlus} onClick={() => router.push('/assessments/new')} className="w-full sm:w-auto">
           Create New
         </Button>
       </header>

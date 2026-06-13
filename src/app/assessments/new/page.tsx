@@ -225,11 +225,11 @@ export default function NewAssessmentPage() {
                 );
               })}
               
-              <div className="flex justify-between items-center mt-6 sticky bottom-6 bg-white p-4 rounded-lg border border-slate-200 shadow-xl">
-                <Button variant="secondary" onClick={() => setStep(1)} icon={faArrowLeft}>
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 sticky bottom-6 bg-white p-4 rounded-lg border border-slate-200 shadow-xl">
+                <Button variant="secondary" onClick={() => setStep(1)} icon={faArrowLeft} className="w-full sm:w-auto">
                   Back
                 </Button>
-                <Button onClick={handleSave} isLoading={loading} icon={faSave} className="px-10">
+                <Button onClick={handleSave} isLoading={loading} icon={faSave} className="w-full sm:w-auto px-10">
                   Save & Finish
                 </Button>
               </div>

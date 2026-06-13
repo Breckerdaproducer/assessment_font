@@ -1,15 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faPlus, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
+import { faSignOutAlt, faPlus, faGraduationCap, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <nav className="h-16 bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
@@ -19,7 +21,8 @@ export function Navbar() {
           Assessly
         </Link>
         
-        <div className="flex items-center gap-6">
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-6">
           {user ? (
             <>
               <Link href="/dashboard" className="font-medium text-slate-600 hover:text-blue-600 transition">Dashboard</Link>
@@ -43,7 +46,62 @@ export function Navbar() {
             </>
           )}
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="md:hidden text-slate-600 p-2"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
+        </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-slate-200 shadow-lg p-4 flex flex-col gap-4 animate-in slide-in-from-top duration-200">
+          {user ? (
+            <>
+              <Link 
+                href="/dashboard" 
+                className="font-medium text-slate-600 p-2 hover:bg-slate-50 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+              {user.role === 'LECTURER' && (
+                 <Link 
+                   href="/assessments/new" 
+                   className="font-medium text-slate-600 p-2 hover:bg-slate-50 rounded flex items-center gap-2"
+                   onClick={() => setIsMenuOpen(false)}
+                 >
+                   <FontAwesomeIcon icon={faPlus} className="text-xs" />
+                   New Assessment
+                 </Link>
+              )}
+              <div className="border-t border-slate-100 pt-4 flex items-center justify-between px-2">
+                <span className="font-semibold text-sm">{user.firstName}</span>
+                <Button variant="ghost" onClick={() => { logout(); setIsMenuOpen(false); }} className="p-2 text-red-500">
+                  <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+                  Logout
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link 
+                href="/login" 
+                className="font-medium text-slate-600 p-2 hover:bg-slate-50 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Button onClick={() => { router.push('/register'); setIsMenuOpen(false); }} className="w-full">
+                Register
+              </Button>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

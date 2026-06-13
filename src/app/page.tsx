@@ -16,7 +16,7 @@ export default function Home() {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 py-20">
         <section className="text-center py-20 flex flex-col items-center gap-8">
-          <h1 className="text-6xl md:text-8xl font-black text-slate-900 leading-tight tracking-tighter">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 leading-tight tracking-tighter">
             Smart Assessments <br /> 
             <span className="text-blue-600">Simplified.</span>
           </h1>
@@ -24,17 +24,17 @@ export default function Home() {
             Transform your learning materials into interactive assessments instantly. 
             The most powerful platform for educators and students to track real-time progress.
           </p>
-          <div className="flex gap-4 mt-4">
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
             {user ? (
-              <Button className="px-10 py-4 text-lg shadow-xl shadow-blue-100" onClick={() => router.push('/dashboard')} icon={faArrowRight}>
+              <Button className="px-10 py-4 text-lg shadow-xl shadow-blue-100 w-full sm:w-auto" onClick={() => router.push('/dashboard')} icon={faArrowRight}>
                 Go to Dashboard
               </Button>
             ) : (
               <>
-                <Button className="px-10 py-4 text-lg shadow-xl shadow-blue-100" onClick={() => router.push('/register')}>
+                <Button className="px-10 py-4 text-lg shadow-xl shadow-blue-100 w-full sm:w-auto" onClick={() => router.push('/register')}>
                   Create Free Account
                 </Button>
-                <Button variant="secondary" className="px-10 py-4 text-lg" onClick={() => router.push('/login')}>
+                <Button variant="secondary" className="px-10 py-4 text-lg w-full sm:w-auto" onClick={() => router.push('/login')}>
                   Sign In
                 </Button>
               </>

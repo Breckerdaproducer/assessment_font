@@ -127,7 +127,7 @@ export default function AttemptResultPage({
 
                 <div className="h-12 w-px bg-slate-200 hidden md:block" />
 
-                <div className="flex gap-10">
+                <div className="flex flex-row gap-8 sm:gap-10">
                    <div className="text-center">
                     <div className="text-2xl font-bold text-slate-800">{data.score} / {totalQuestions}</div>
                     <div className="text-xs font-bold uppercase tracking-widest text-slate-400">Correct</div>

@@ -12,7 +12,7 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <Navbar />
-      <main style={{ maxWidth: '1200px', margin: '2rem auto', padding: '0 1rem' }}>
+      <main className="max-w-7xl mx-auto py-8 px-4">
         {user?.role === 'LECTURER' ? <LecturerDashboard /> : <StudentDashboard />}
       </main>
     </ProtectedRoute>
