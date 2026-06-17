@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/Button/Button';
@@ -16,9 +17,15 @@ export function Navbar() {
   return (
     <nav className="h-16 bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-4">
-        <Link href="/" className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-          <FontAwesomeIcon icon={faGraduationCap} />
-          Assessly
+        <Link href="/" className="flex items-center gap-2">
+          <Image 
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgjt6cAwZKD5MHyrkWwCdB3-eiCiv8rgGjOf61a8DzXJu-GYQsfwSHNAA&s" 
+            alt="Assessly Logo" 
+            width={40} 
+            height={40}
+            className="w-10 h-10 object-contain rounded-md"
+          />
+          <span className="text-2xl font-bold text-blue-600">Assessly</span>
         </Link>
         
         {/* Desktop Menu */}
