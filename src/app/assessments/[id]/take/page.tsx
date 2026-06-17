@@ -57,7 +57,15 @@ export default function TakeAssessmentPage({
         }
 
         setAssessment(assessData.data);
-        setQuestions((questData.data || []).map(normalizeQuestion));
+        const normalizedQuestions = (questData.data || []).map((q: any, idx: number) => {
+          const normalized = normalizeQuestion(q);
+          return {
+            ...normalized,
+            question_id: normalized.question_id || q.id || `q-${idx}`,
+            question_number: normalized.question_number || idx + 1
+          };
+        });
+        setQuestions(normalizedQuestions);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -68,8 +76,8 @@ export default function TakeAssessmentPage({
     fetchData();
   }, [id]);
 
-  const currentQuestion = questions[currentIndex] ? normalizeQuestion(questions[currentIndex]) : null;
-  const options = currentQuestion?.options.map((option, index) => normalizeOption(option, index)) || [];
+  const currentQuestion = questions[currentIndex] || null;
+  const options = currentQuestion?.options || [];
 
   const handleSubmit = async () => {
     if (!confirm('Are you sure you want to submit your answers?')) return;
@@ -150,43 +158,56 @@ export default function TakeAssessmentPage({
         {/* QUESTION CARD */}
         <Card className="relative pt-8">
           <span className="absolute top-4 left-4 text-xs font-black text-blue-500 uppercase">
-            Question {currentQuestion.question_number || currentIndex + 1} / {questions.length}
+            Question {currentQuestion.question_number} / {questions.length}
           </span>
 
           <h3 className="text-lg font-bold mb-6">
-            {currentQuestion.question_text}
+            {currentQuestion.question_text || currentQuestion.text}
           </h3>
 
           <div className="flex flex-col gap-3">
-            {options.map((opt, oIdx) => (
-              <label
-                key={opt.id ?? oIdx}
-                className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-all ${
-                  answers[currentQuestion.question_id] === oIdx
-                    ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-100'
-                    : 'border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name={`question-${currentQuestion.question_id}`}
-                  checked={
-                    answers[currentQuestion.question_id] === oIdx
-                  }
-                  onChange={() =>
-                    setAnswers((prev) => ({
-                      ...prev,
-                      [currentQuestion.question_id]: oIdx,
-                    }))
-                  }
-                  className="w-5 h-5 text-blue-600"
-                />
+            {options.map((opt: any, oIdx: number) => {
+              // Ensure we have a normalized object to work with
+              const n = typeof opt === 'string' ? normalizeOption(opt, oIdx) : opt;
+              
+              // Logic to determine what to show:
+              // 1. If label is just a single letter/number (like "A", "1") and text is different, show "A. text"
+              // 2. Otherwise just show the text/label that has content
+              const hasDistinctLabel = n.label && n.label.length <= 2 && n.label !== n.text;
+              const displayLabel = hasDistinctLabel ? `${n.label}. ` : '';
+              const displayText = n.text || n.label || n.question_text || `Option ${oIdx + 1}`;
 
-                <span className="font-medium text-slate-700">
-                  {String(opt.label ?? opt.text ?? ["A", "B", "C", "D", "E", "F"][oIdx] ?? '').replace(/\s+/g, ' ').trim()}
-                </span>
-              </label>
-            ))}
+              return (
+                <label
+                  key={n.id || `opt-${oIdx}`}
+                  className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-all ${
+                    answers[currentQuestion.question_id] === oIdx
+                      ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-100'
+                      : 'border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name={`question-${currentQuestion.question_id}`}
+                    checked={
+                      answers[currentQuestion.question_id] === oIdx
+                    }
+                    onChange={() =>
+                      setAnswers((prev) => ({
+                        ...prev,
+                        [currentQuestion.question_id]: oIdx,
+                      }))
+                    }
+                    className="w-5 h-5 text-blue-600"
+                  />
+
+                  <span className="font-medium text-slate-700">
+                    {displayLabel && <span className="text-slate-400 mr-1">{displayLabel}</span>}
+                    {String(displayText).replace(/\s+/g, ' ').trim()}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </Card>
 
